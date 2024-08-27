@@ -14,7 +14,7 @@ body{
 }
 
 .heading{
-    background-color: white;
+    /* background-color: white; */
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -30,7 +30,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid black;
+    /* border: 2px solid black; */
     height: 100%;
     width: 100%;
 }
@@ -43,10 +43,10 @@ form{
 }
 
 .input-box{
-    margin-top: 10px;
+    /* margin-top: 10px; */
     display: flex;
     flex-direction: column;
-    border: 2px solid white;
+    /* border: 2px solid white; */
     align-items: center;
     width: 100%;
     height: 100%;
@@ -61,10 +61,18 @@ form{
     border: none;
 }
 
-.input-box input
-
 .input-box button {
-    margin-top: 10px;
-    
+    font-family: Verdana, sans-serif;
+    font-weight: 300;
+    margin-top: 20px;
+    width: 100px;
+    height: 50px;
+    border-radius: 15px;
+    border: none;
+}
+
+.input-box button:hover{
+    border: 1px solid black;
+    background-color: lightblue;
 }
 
