@@ -2,7 +2,8 @@
 
 body{
     font-family: "Moderustic", sans-serif;
-    background-color: rgb(237, 236, 216);
+    /* background-color: rgb(237, 236, 216); */
+    background-color: rgb(0, 0, 0);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -13,7 +14,6 @@ body{
 
 .heading{
     margin-top: 8px;
-    /* background-color: white; */
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -24,26 +24,58 @@ body{
 }
 
 .title{
+    color: rgb(40, 42, 58);
     font-weight: 1000;
     font-size: 100px;
 }
 
+.main-content{
+    /* border: 2px solid white; */
+}
+
 .options{
     display: flex;
-    border: 2px solid black;
     justify-content: space-between;
+    height: 100px;
+    gap: 10px;
 }
 
 .offline-btn{
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 50%;
-    border: 2px solid black;
+    text-decoration: none;
+    background-color: rgb(198, 151, 73);
+    color: white;
+    border-radius: 10px;
 }
 
 .online-btn{
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 50%;
-    border: 2px solid black;
+    text-decoration: none;
+    background-color: rgb(198, 151, 73);
+    color: white;
+    border-radius: 10px;
+}
+
+.online-btn:hover{
+    background-color: rgb(115, 95, 50);
+}
+
+.offline-btn:hover{
+    background-color: rgb(115, 95, 50);
+}
+
+.footer{
+    /* border: 2px solid white; */
+    display: flex;
+    align-items:end;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    color: white;
 }
