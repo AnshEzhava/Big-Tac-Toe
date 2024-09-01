@@ -3,7 +3,7 @@
 body{
     font-family: "Moderustic", sans-serif;
     /* background-color: rgb(237, 236, 216); */
-    background-color: rgb(0, 0, 0);
+    background-color: rgb(30, 32, 30);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -24,7 +24,7 @@ body{
 }
 
 .title{
-    color: rgb(40, 42, 58);
+    color: rgb(236, 223, 204);
     font-weight: 1000;
     font-size: 100px;
 }
@@ -46,7 +46,7 @@ body{
     align-items: center;
     width: 50%;
     text-decoration: none;
-    background-color: rgb(198, 151, 73);
+    background-color: rgb(60, 61, 55);
     color: white;
     border-radius: 10px;
 }
@@ -57,17 +57,17 @@ body{
     align-items: center;
     width: 50%;
     text-decoration: none;
-    background-color: rgb(198, 151, 73);
+    background-color: rgb(60, 61, 55);
     color: white;
     border-radius: 10px;
 }
 
 .online-btn:hover{
-    background-color: rgb(115, 95, 50);
+    background-color: rgb(105, 117, 101);
 }
 
 .offline-btn:hover{
-    background-color: rgb(115, 95, 50);
+    background-color: rgb(105, 117, 101);
 }
 
 .footer{
