@@ -1,22 +1,26 @@
 let currentPlayer = 'X';
 const ultimateGrid = Array(9).fill(null).map(() => Array(9).fill(null));
-const miniGridStatus = Array(9).fill(null); 
+const miniGridStatus = Array(9).fill(null);
 let activeMiniGrid = -1;
 
 function handleCellClick(event) {
     const cell = event.target;
     const [miniGridIndex, cellIndex] = cell.dataset.index.split('-').map(Number);
-    
+
     if (ultimateGrid[miniGridIndex][cellIndex] || (activeMiniGrid !== -1 && activeMiniGrid !== miniGridIndex)) {
         return;
     }
 
     ultimateGrid[miniGridIndex][cellIndex] = currentPlayer;
     cell.textContent = currentPlayer;
+    cell.classList.add('filled');
+    cell.classList.remove('empty');
 
     if (checkWinner(ultimateGrid[miniGridIndex])) {
         miniGridStatus[miniGridIndex] = currentPlayer;
-        document.querySelectorAll('.mini-grid')[miniGridIndex].classList.add(`won-${currentPlayer}`);
+        const miniGridElement = document.querySelectorAll('.mini-grid')[miniGridIndex];
+        miniGridElement.classList.add(`won-${currentPlayer}`);
+        miniGridElement.setAttribute('data-winner', currentPlayer);
     }
 
     if (checkWinner(miniGridStatus)) {
@@ -26,7 +30,6 @@ function handleCellClick(event) {
     }
 
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-
     activeMiniGrid = cellIndex;
     if (miniGridStatus[activeMiniGrid]) activeMiniGrid = -1;
 
@@ -35,9 +38,9 @@ function handleCellClick(event) {
 
 function checkWinner(grid) {
     const winningCombinations = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-        [0, 4, 8], [2, 4, 6]             // Diagonals
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
     ];
     return winningCombinations.some(combination =>
         combination.every(index => grid[index] && grid[index] === grid[combination[0]])
@@ -49,7 +52,11 @@ function resetGame() {
     ultimateGrid.forEach(miniGrid => miniGrid.fill(null));
     miniGridStatus.fill(null);
     activeMiniGrid = -1;
-    document.querySelectorAll('.mini-grid div').forEach(cell => cell.textContent = '');
+    document.querySelectorAll('.mini-grid div').forEach(cell => {
+        cell.textContent = '';
+        cell.classList.remove('filled');
+        cell.classList.add('empty');
+    });
     document.querySelectorAll('.mini-grid').forEach(grid => grid.className = 'mini-grid');
     updateGridHighlight();
 }
@@ -68,6 +75,7 @@ document.querySelectorAll('.mini-grid div').forEach((cell, index) => {
     const cellIndex = index % 9;
     cell.dataset.index = `${miniGridIndex}-${cellIndex}`;
     cell.addEventListener('click', handleCellClick);
+    cell.classList.add('empty');
 });
 
 updateGridHighlight();

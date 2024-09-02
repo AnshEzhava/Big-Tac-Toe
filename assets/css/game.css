@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Moderustic:wght@300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=New+Amsterdam&display=swap');
 
 body {
     display: flex;
@@ -6,7 +7,8 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background-color: beige;
+    font-family: "Moderustic";
 }
 
 .ultimate-grid {
@@ -16,8 +18,10 @@ body {
     gap: 5px;
     width: 600px;
     height: 600px;
-    border: 5px solid #000;
-    background-color: #fff;
+    /* border: 5px solid #000; */
+    background-color: beige;
+    font-family: "New Amsterdam";
+    font-size: large;
 }
 
 .mini-grid {
@@ -27,6 +31,7 @@ body {
     border: 3px solid #000;
     background-color: #e0e0e0;
     opacity: 0.5;
+    position: relative;
 }
 
 .mini-grid div {
@@ -38,10 +43,20 @@ body {
     font-weight: bold;
     cursor: pointer;
     background-color: #fff;
+    transition: opacity 0.3s;
+}
+
+.mini-grid div.filled{
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.mini-grid div.empty:hover{
+    background-color: #f9f9f9;
 }
 
 .mini-grid div:hover {
-    background-color: #f9f9f9;
+    background-color: #999999;
 }
 
 .mini-grid.active {
@@ -50,6 +65,18 @@ body {
 
 .mini-grid.won-X, .mini-grid.won-O {
     background-color: #d3d3d3;
+    position: relative;
+}
+
+.mini-grid.won-X::after, .mini-grid.won-O::after {
+    content: attr(data-winner);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 100px;
+    color: rgba(0, 0, 0, 2000);
+    z-index: 1;
 }
 
 .mini-grid.won-X div, .mini-grid.won-O div {
