@@ -29,9 +29,9 @@ body{
     font-size: 100px;
 }
 
-.main-content{
-    /* border: 2px solid white; */
-}
+/* .main-content{
+    border: 2px solid white;
+} */
 
 .options{
     display: flex;
