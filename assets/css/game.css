@@ -1,14 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Moderustic:wght@300..800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=New+Amsterdam&display=swap');
 
 body {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: beige;
+    background-color: #1E201E;
     font-family: "Moderustic";
+    padding-left: 100px;
+    padding-right: 100px;
 }
 
 .ultimate-grid {
@@ -18,9 +19,7 @@ body {
     gap: 5px;
     width: 600px;
     height: 600px;
-    /* border: 5px solid #000; */
-    background-color: beige;
-    font-family: "New Amsterdam";
+    background-color: #1E201E;
     font-size: large;
 }
 
@@ -52,7 +51,7 @@ body {
 }
 
 .mini-grid div.empty:hover{
-    background-color: #f9f9f9;
+    background-color: #919090;
 }
 
 .mini-grid div:hover {
@@ -81,4 +80,20 @@ body {
 
 .mini-grid.won-X div, .mini-grid.won-O div {
     pointer-events: none;
+}
+
+.side-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px;
+    width: 500px;
+    height: 75%;
+    /* border: 2px solid black; */
+    color: wheat;
+}
+
+#winner-line{
+    font-size: 50px;
 }

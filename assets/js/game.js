@@ -24,12 +24,22 @@ function handleCellClick(event) {
     }
 
     if (checkWinner(miniGridStatus)) {
-        alert(`Player ${currentPlayer} wins the game!`);
-        resetGame();
+        // alert(`Player ${currentPlayer} wins the game!`);
+        document.getElementById("winner-line").textContent = `Player ${currentPlayer} wins the game!`
+        // resetGame();
         return;
     }
 
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+
+    // Code to display current player.
+    if(currentPlayer == `X`){
+        document.getElementById("info").textContent = `Current turn: X`
+    } else {
+        document.getElementById("info").textContent = `Current turn: O`
+    }
+
+
     activeMiniGrid = cellIndex;
     if (miniGridStatus[activeMiniGrid]) activeMiniGrid = -1;
 
