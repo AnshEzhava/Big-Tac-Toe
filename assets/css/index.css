@@ -78,4 +78,53 @@ body{
     height: 100%;
     width: 100%;
     color: white;
+    overflow: hidden;
 }
+
+.socials {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+    padding-left: 10px;
+}
+
+.icon-wrapper {
+    font-size: 50px;
+    position: relative;
+    display: inline-block;
+}
+
+.link-box {
+    position: absolute;
+    bottom: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #444;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1;
+    white-space: nowrap;
+}
+
+.icon-wrapper:hover .link-box {
+    bottom: 40px; /* adjust according to icon size */
+    opacity: 1;
+    visibility: visible;
+}
+
+.link-box a {
+    color: white;
+    text-decoration: none;
+}
+
+.link-box a:hover {
+    text-decoration: underline;
+}   
