@@ -12,10 +12,6 @@ body {
     padding-right: 100px;
 }
 
-.game{
-    /* display: flex; */
-}
-
 .ultimate-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
