@@ -64,7 +64,7 @@ body{
 
 .online-btn:hover{
     background-color: rgb(105, 117, 101);
-    cursor: not-allowed;
+    /* cursor: not-allowed; */
 }
 
 .offline-btn:hover{
