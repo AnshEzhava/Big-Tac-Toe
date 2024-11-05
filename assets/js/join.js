@@ -26,7 +26,7 @@ if (!sessionId) {
         })
         .then(response => {
             if (response.ok) {
-                window.location.href = `game.html?sessionId=${sessionId}`;
+                window.location.href = `guest.html?sessionId=${sessionId}`;
             } else if (response.status === 400) {
                 joinStatus.textContent = "Game session is not available for joining.";
             } else if (response.status === 404) {

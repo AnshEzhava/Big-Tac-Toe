@@ -15,15 +15,16 @@ copyLinkButton.addEventListener('click', () => {
 
 function checkGameStatus(){
     fetch(`http://localhost:8080/api/games/status/${sessionId}`)
-    .then(resonse => resonse.json)
+    .then(response => response.text()) // Corrected .json() call
     .then(status => {
-        if(status == "PLAYING"){
-            window.location.href(`game.html?sessionId=${sessionId}`);
+        if(status === "PLAYING"){ // Use strict equality here
+            console.log("Check was made for PLAYING");
+            window.location.href = `host.html?sessionId=${sessionId}`;
         } else {
             document.getElementById("statusMessage").textContent = `Game Session Status: ${status}`;
         }
     })
-    .catch(error => console.error("Error checking game status cuz you are fukcing dumb", error));
+    .catch(error => console.error("Error checking game status:", error));
 }
 
 setInterval(checkGameStatus, 3000);
