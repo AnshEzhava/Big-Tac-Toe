@@ -12,3 +12,18 @@ copyLinkButton.addEventListener('click', () => {
         console.error("Failed to copy: ", err);
     });
 });
+
+function checkGameStatus(){
+    fetch(`http://localhost:8080/api/games/status/${sessionId}`)
+    .then(resonse => resonse.json)
+    .then(status => {
+        if(status == "PLAYING"){
+            window.location.href(`game.html?sessionId=${sessionId}`);
+        } else {
+            document.getElementById("statusMessage").textContent = `Game Session Status: ${status}`;
+        }
+    })
+    .catch(error => console.error("Error checking game status cuz you are fukcing dumb", error));
+}
+
+setInterval(checkGameStatus, 3000);
