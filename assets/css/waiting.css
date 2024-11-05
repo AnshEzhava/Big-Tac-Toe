@@ -1,0 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Moderustic:wght@300..800&display=swap");
+
+body {
+  font-family: "Moderustic", sans-serif;
+  background-color: #1a1a1a;
+  color: #e0d7c6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  text-align: center;
+}
+
+.Heading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 7em;
+  padding: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: "Moderustic", sans-serif;
+  margin: 20px 0 0;
+  color: #e0d7c6;
+}
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-20vh);
+  border: 1.5px solid #444;
+  padding: 40px;
+  border-radius: 8px;
+  background-color: black;
+}
+.subHeading {
+  font-family: "Moderustic", sans-serif;
+  margin: 5px 0;
+  color: #e0d7c6;
+  font-size: 2em;
+}
+
+#session-link {
+  font-family: "Moderustic", sans-serif;
+  font-size: 1.2em;
+  color: #e0d7c6;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+button#copyLinkButton {
+  font-family: "Moderustic", sans-serif;
+  background-color: #333;
+  color: #e0d7c6;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 0px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+button#copyLinkButton:hover {
+  font-family: "Moderustic", sans-serif;
+  background-color: #555;
+}
+
+#status,
+#statusMessage {
+  font-family: "Moderustic", sans-serif;
+  margin-top: 15px;
+  color: #e0d7c6;
+  font-size: 1em;
+}
