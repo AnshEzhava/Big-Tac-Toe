@@ -15,9 +15,9 @@ copyLinkButton.addEventListener('click', () => {
 
 function checkGameStatus(){
     fetch(`https://bigtactoe-backend-production.up.railway.app/api/games/status/${sessionId}`)
-    .then(response => response.text()) // Corrected .json() call
+    .then(response => response.text())
     .then(status => {
-        if(status === "PLAYING"){ // Use strict equality here
+        if(status === "PLAYING"){
             console.log("Check was made for PLAYING");
             window.location.href = `host.html?sessionId=${sessionId}`;
         } else {
