@@ -13,6 +13,7 @@ copyLinkButton.addEventListener('click', () => {
     });
 });
 
+//test
 function checkGameStatus(){
     fetch(`http://localhost:8080/api/games/status/${sessionId}`)
     .then(response => response.text()) // Corrected .json() call
