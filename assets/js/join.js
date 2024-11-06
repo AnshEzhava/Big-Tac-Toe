@@ -17,7 +17,7 @@ if (!sessionId) {
     const joinStatus = document.getElementById("joinStatus");
 
     joinButton.addEventListener('click', () => {
-        fetch(`http://localhost:8080/api/games/join/${sessionId}`, {
+        fetch(`http://bigtactoe-backend-production.up.railway.app/api/games/join/${sessionId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
