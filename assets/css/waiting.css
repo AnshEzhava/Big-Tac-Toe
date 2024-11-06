@@ -7,44 +7,51 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  margin: 0;
   text-align: center;
 }
 
-.Heading {
+.container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  font-size: 7em;
+  text-align: center;
+  padding: 20px;
+}
+
+.Heading {
+  font-size: 5em;
   padding: 10px 0;
   width: 100%;
   box-sizing: border-box;
-  font-family: "Moderustic", sans-serif;
-  margin: 20px 0 0;
+  margin: 20px 0;
   color: #e0d7c6;
 }
+
 .center-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateX(-20vh);
   border: 1.5px solid #444;
-  padding: 40px;
+  padding: 20px;
   border-radius: 8px;
   background-color: black;
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
 }
+
 .subHeading {
-  font-family: "Moderustic", sans-serif;
   margin: 5px 0;
   color: #e0d7c6;
-  font-size: 2em;
+  font-size: 1.5em;
 }
 
 #session-link {
-  font-family: "Moderustic", sans-serif;
-  font-size: 1.2em;
+  font-size: 1em;
   color: #e0d7c6;
-  margin: 20px 0;
+  margin: 15px 0;
   padding: 10px;
   background-color: #333;
   border: 1px solid #444;
@@ -53,26 +60,80 @@ body {
 }
 
 button#copyLinkButton {
-  font-family: "Moderustic", sans-serif;
   background-color: #333;
   color: #e0d7c6;
   border: none;
-  padding: 10px 20px;
-  margin-top: 0px;
+  padding: 8px 16px;
   cursor: pointer;
   border-radius: 5px;
   font-size: 1em;
 }
 
 button#copyLinkButton:hover {
-  font-family: "Moderustic", sans-serif;
   background-color: #555;
 }
 
 #status,
 #statusMessage {
-  font-family: "Moderustic", sans-serif;
-  margin-top: 15px;
+  margin-top: 10px;
   color: #e0d7c6;
   font-size: 1em;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .Heading {
+    font-size: 3em;
+    margin: 15px 0;
+  }
+
+  .center-content {
+    padding: 15px;
+  }
+
+  .subHeading {
+    font-size: 1.2em;
+  }
+
+  #session-link {
+    font-size: 0.9em;
+    padding: 8px;
+  }
+
+  button#copyLinkButton {
+    padding: 8px 12px;
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .Heading {
+    font-size: 2.5em;
+    margin: 10px 0;
+  }
+
+  .center-content {
+    padding: 10px;
+    border-width: 1px;
+  }
+
+  .subHeading {
+    font-size: 1em;
+  }
+
+  #session-link {
+    font-size: 0.8em;
+    margin: 10px 0;
+    padding: 6px;
+  }
+
+  button#copyLinkButton {
+    padding: 6px 10px;
+    font-size: 0.8em;
+  }
+
+  #status,
+  #statusMessage {
+    font-size: 0.9em;
+  }
 }
