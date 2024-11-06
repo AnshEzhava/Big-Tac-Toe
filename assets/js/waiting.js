@@ -13,6 +13,8 @@ copyLinkButton.addEventListener('click', () => {
     });
 });
 
+
+//pls work my man
 function checkGameStatus(){
     fetch(`https://bigtactoe-backend-production.up.railway.app/api/games/status/${sessionId}`)
     .then(response => response.text())
