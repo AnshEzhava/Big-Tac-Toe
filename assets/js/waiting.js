@@ -1,6 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const sessionId = urlParams.get('sessionId');
-const gameLink = `${window.location.origin}/join.html?sessionId=${sessionId}`;
+const gameLink = `${window.location.origin}/Big-Tac-Toe/join.html?sessionId=${sessionId}`;
 
 document.getElementById('session-link').textContent = gameLink;
 
@@ -13,11 +13,13 @@ copyLinkButton.addEventListener('click', () => {
     });
 });
 
+
+//pls work my man
 function checkGameStatus(){
-    fetch(`http://localhost:8080/api/games/status/${sessionId}`)
-    .then(response => response.text()) // Corrected .json() call
+    fetch(`https://bigtactoe-backend-production.up.railway.app/api/games/status/${sessionId}`)
+    .then(response => response.text())
     .then(status => {
-        if(status === "PLAYING"){ // Use strict equality here
+        if(status === "PLAYING"){
             console.log("Check was made for PLAYING");
             window.location.href = `host.html?sessionId=${sessionId}`;
         } else {

@@ -9,7 +9,9 @@ const ultimateGrid = Array(9).fill(null).map(() => Array(9).fill(null));
 const miniGridStatus = Array(9).fill(null); // Track who won each mini-grid
 
 if (sessionId) {
-    const socket = new WebSocket(`ws://localhost:8080/ws/game?sessionId=${sessionId}`);
+    const socket = new WebSocket(`wss://bigtactoe-backend-production.up.railway.app/ws/game?sessionId=${sessionId}`);
+
+    //bigtactoe-backend-production.up.railway.app
 
     socket.onopen = () => {
         console.log("Connected to WebSocket for game updates, session ID:", sessionId);
