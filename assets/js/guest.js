@@ -17,7 +17,7 @@ if (sessionId) {
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        const { miniGridIndex, cellIndex, player, nextTurn, nextActiveMiniGrid, type, winner } = data;
+        const { miniGridIndex, cellIndex, player, nextTurn, nextActiveMiniGrid, type, winner, miniGridWinner } = data;
 
         if (type === 'GAME_OVER') {
             document.getElementById("winner-line").textContent = `Player ${winner} wins the game!`;
@@ -37,6 +37,14 @@ if (sessionId) {
             document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
             updateGridHighlight(); // Reflect allowed/disallowed grids
         }
+
+        // If a mini-grid has been won, update it for both players
+        if (miniGridWinner) {
+            miniGridStatus[miniGridIndex] = miniGridWinner;
+            const miniGridElement = document.querySelectorAll('.mini-grid')[miniGridIndex];
+            miniGridElement.classList.add(`won-${miniGridWinner}`);
+            miniGridElement.setAttribute('data-winner', miniGridWinner);
+        }
     };
 
     socket.onclose = () => {
@@ -52,41 +60,57 @@ if (sessionId) {
             console.log("Not your turn!");
             return; // Prevent move if it’s not this player's turn
         }
-
+    
         const cell = event.target;
         const [miniGridIndex, cellIndex] = cell.dataset.index.split('-').map(Number);
-
+    
         // Check if cell is already filled or if it's in an inactive mini-grid
         if (ultimateGrid[miniGridIndex][cellIndex] || (activeMiniGrid !== -1 && activeMiniGrid !== miniGridIndex)) {
             return;
         }
-
+    
         // Update local game state
         ultimateGrid[miniGridIndex][cellIndex] = playerSymbol;
         cell.textContent = playerSymbol;
         cell.classList.add('filled');
         cell.classList.remove('empty');
-
+    
+        let miniGridWinner = null;
+    
         // Check if the current player won this mini-grid
         if (checkMiniGridWinner(ultimateGrid[miniGridIndex])) {
             miniGridStatus[miniGridIndex] = playerSymbol; // Mark mini-grid as won by the current player
             const miniGridElement = document.querySelectorAll('.mini-grid')[miniGridIndex];
             miniGridElement.classList.add(`won-${currentPlayer}`);
             miniGridElement.setAttribute('data-winner', playerSymbol);
-
+            miniGridWinner = playerSymbol; // Set the winner for broadcasting
+    
             // Check if the current player won the ultimate grid
             if (checkUltimateGridWinner()) {
                 document.getElementById("winner-line").textContent = `Player ${playerSymbol} wins the game!`;
-                socket.send(JSON.stringify({ type: 'GAME_OVER', winner: playerSymbol, sessionId })); // Send game over message
+                
+                // Send the final game state to the WebSocket, including the final move and the game-over state
+                const moveData = {
+                    miniGridIndex,
+                    cellIndex,
+                    player: playerSymbol,
+                    nextTurn: null, // No next turn, as the game is over
+                    nextActiveMiniGrid: null,
+                    sessionId: sessionId,
+                    miniGridWinner: miniGridWinner,
+                    type: 'GAME_OVER', // Indicate game-over state
+                    winner: playerSymbol
+                };
+                socket.send(JSON.stringify(moveData));
                 return; // Stop further moves
             }
         }
-
+    
         // Calculate the next player and next allowed grid
         const nextTurn = playerSymbol === 'X' ? 'O' : 'X';
         activeMiniGrid = cellIndex;
         if (miniGridStatus[activeMiniGrid]) activeMiniGrid = -1;
-
+    
         // Send move data to WebSocket
         const moveData = {
             miniGridIndex,
@@ -94,16 +118,17 @@ if (sessionId) {
             player: playerSymbol,
             nextTurn,
             nextActiveMiniGrid: activeMiniGrid,
-            sessionId: sessionId
+            sessionId: sessionId,
+            miniGridWinner: miniGridWinner // Broadcast mini-grid winner, if any
         };
         console.log("Sending move data:", moveData);
         socket.send(JSON.stringify(moveData));
-
+    
         // Update turn and highlight for the current player
         currentPlayer = nextTurn;
         document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
         updateGridHighlight();
-    }
+    }    
 
     function updateGridHighlight() {
         document.querySelectorAll('.mini-grid').forEach((grid, index) => {
