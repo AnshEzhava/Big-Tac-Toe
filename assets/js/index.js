@@ -11,7 +11,7 @@ button.addEventListener('mouseout', function(){
 button.addEventListener('click', createGame);
 
 function createGame() {
-    fetch('https://bigtactoe-backend-production.up.railway.app/api/games/create', {
+    fetch('http://localhost:8080/api/games/create', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json' 
