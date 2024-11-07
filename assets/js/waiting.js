@@ -17,7 +17,7 @@ copyLinkButton.addEventListener("click", () => {
 });
 
 function checkGameStatus() {
-  fetch(`http://bigtactoe-backend-production.up.railway.app/api/games/status/${sessionId}`)
+  fetch(`https://bigtactoe-backend-production.up.railway.app/api/games/status/${sessionId}`)
     .then((response) => response.text())
     .then((status) => {
       if (status === "PLAYING") {
