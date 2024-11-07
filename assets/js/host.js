@@ -12,9 +12,10 @@ const miniGridStatus = Array(9).fill(null); // Track who won each mini-grid
 
 if (sessionId) {
   const socket = new WebSocket(
-    `ws://localhost:8080/ws/game?sessionId=${sessionId}`
+    `wss://bigtactoe-backend-production.up.railway.app/ws/game?sessionId=${sessionId}`
   );
-
+  //bigtactoe-backend-production.up.railway.app
+  //localhost:8080
   socket.onopen = () => {
     console.log(
       "Connected to WebSocket for game updates, session ID:",
@@ -39,12 +40,11 @@ if (sessionId) {
       document.getElementById(
         "winner-line"
       ).textContent = `Player ${winner} wins the game!`;
-      return; // Stop further actions if the game is over
+      return;
     }
 
     console.log("Received data:", data);
 
-    // Update the cell based on the received message
     const cell = document.querySelector(
       `.mini-grid[data-index='${miniGridIndex}'] div[data-cell='${cellIndex}']`
     );
@@ -52,15 +52,14 @@ if (sessionId) {
       cell.textContent = player;
       cell.classList.add("filled");
       cell.classList.remove("empty");
-      currentPlayer = nextTurn; // Update turn to the next player
-      activeMiniGrid = nextActiveMiniGrid; // Update allowed grid
+      currentPlayer = nextTurn;
+      activeMiniGrid = nextActiveMiniGrid;
       document.getElementById(
         "info"
       ).textContent = `Current turn: ${currentPlayer}`;
-      updateGridHighlight(); // Reflect allowed/disallowed grids
+      updateGridHighlight();
     }
 
-    // If a mini-grid has been won, update it for both players
     if (miniGridWinner) {
       miniGridStatus[miniGridIndex] = miniGridWinner;
       const miniGridElement =
@@ -88,29 +87,24 @@ if (sessionId) {
         })
       );
     }
-    // Redirect the host to the index.html
     window.location.href = "index.html";
   };
-  // Listen for the guest to be notified that the host has left
   function redirectGuest() {
-    // Redirect the guest to the index.html page
     window.location.href = "index.html";
   }
 
-  // Listen for the WebSocket messages (host leaving)
   socket.onmessage = function (event) {
     const data = JSON.parse(event.data);
     if (data.event === "host-leaving") {
       console.log("Host has left, redirecting the guest.");
       redirectGuest();
     }
-    // Other game-related messages...
   };
 
   function handleCellClick(event) {
     if (currentPlayer !== playerSymbol) {
       console.log("Not your turn!");
-      return; // Prevent move if it’s not this player's turn
+      return;
     }
 
     const cell = event.target;
@@ -118,7 +112,6 @@ if (sessionId) {
       .split("-")
       .map(Number);
 
-    // Check if cell is already filled or if it's in an inactive mini-grid
     if (
       ultimateGrid[miniGridIndex][cellIndex] ||
       (activeMiniGrid !== -1 && activeMiniGrid !== miniGridIndex)
@@ -126,7 +119,6 @@ if (sessionId) {
       return;
     }
 
-    // Update local game state
     ultimateGrid[miniGridIndex][cellIndex] = playerSymbol;
     cell.textContent = playerSymbol;
     cell.classList.add("filled");
@@ -134,44 +126,39 @@ if (sessionId) {
 
     let miniGridWinner = null;
 
-    // Check if the current player won this mini-grid
     if (checkMiniGridWinner(ultimateGrid[miniGridIndex])) {
-      miniGridStatus[miniGridIndex] = playerSymbol; // Mark mini-grid as won by the current player
+      miniGridStatus[miniGridIndex] = playerSymbol;
       const miniGridElement =
         document.querySelectorAll(".mini-grid")[miniGridIndex];
       miniGridElement.classList.add(`won-${currentPlayer}`);
       miniGridElement.setAttribute("data-winner", playerSymbol);
-      miniGridWinner = playerSymbol; // Set the winner for broadcasting
+      miniGridWinner = playerSymbol;
 
-      // Check if the current player won the ultimate grid
       if (checkUltimateGridWinner()) {
         document.getElementById(
           "winner-line"
         ).textContent = `Player ${playerSymbol} wins the game!`;
 
-        // Send the final game state to the WebSocket, including the final move and the game-over state
         const moveData = {
           miniGridIndex,
           cellIndex,
           player: playerSymbol,
-          nextTurn: null, // No next turn, as the game is over
+          nextTurn: null,
           nextActiveMiniGrid: null,
           sessionId: sessionId,
           miniGridWinner: miniGridWinner,
-          type: "GAME_OVER", // Indicate game-over state
+          type: "GAME_OVER",
           winner: playerSymbol,
         };
         socket.send(JSON.stringify(moveData));
-        return; // Stop further moves
+        return;
       }
     }
 
-    // Calculate the next player and next allowed grid
     const nextTurn = playerSymbol === "X" ? "O" : "X";
     activeMiniGrid = cellIndex;
     if (miniGridStatus[activeMiniGrid]) activeMiniGrid = -1;
 
-    // Send move data to WebSocket
     const moveData = {
       miniGridIndex,
       cellIndex,
@@ -179,12 +166,11 @@ if (sessionId) {
       nextTurn,
       nextActiveMiniGrid: activeMiniGrid,
       sessionId: sessionId,
-      miniGridWinner: miniGridWinner, // Broadcast mini-grid winner, if any
+      miniGridWinner: miniGridWinner,
     };
     console.log("Sending move data:", moveData);
     socket.send(JSON.stringify(moveData));
 
-    // Update turn and highlight for the current player
     currentPlayer = nextTurn;
     document.getElementById(
       "info"
@@ -201,17 +187,16 @@ if (sessionId) {
     });
   }
 
-  // Helper functions to check for wins
   function checkMiniGridWinner(grid) {
     const winningCombinations = [
       [0, 1, 2],
       [3, 4, 5],
-      [6, 7, 8], // Rows
+      [6, 7, 8],
       [0, 3, 6],
       [1, 4, 7],
-      [2, 5, 8], // Columns
+      [2, 5, 8],
       [0, 4, 8],
-      [2, 4, 6], // Diagonals
+      [2, 4, 6],
     ];
     return winningCombinations.some((combination) =>
       combination.every(
@@ -224,12 +209,12 @@ if (sessionId) {
     const winningCombinations = [
       [0, 1, 2],
       [3, 4, 5],
-      [6, 7, 8], // Rows
+      [6, 7, 8],
       [0, 3, 6],
       [1, 4, 7],
-      [2, 5, 8], // Columns
+      [2, 5, 8],
       [0, 4, 8],
-      [2, 4, 6], // Diagonals
+      [2, 4, 6],
     ];
     return winningCombinations.some((combination) =>
       combination.every(
@@ -240,7 +225,6 @@ if (sessionId) {
     );
   }
 
-  // Initialize the cells with click listeners and unique data attributes
   document.querySelectorAll(".mini-grid div").forEach((cell, index) => {
     const miniGridIndex = Math.floor(index / 9);
     const cellIndex = index % 9;

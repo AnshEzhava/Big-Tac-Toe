@@ -18,7 +18,7 @@ if (!sessionId) {
   const joinStatus = document.getElementById("joinStatus");
 
   joinButton.addEventListener("click", () => {
-    fetch(`http://localhost:8080/api/games/join/${sessionId}`, {
+    fetch(`https://bigtactoe-backend-production.up.railway.app/api/games/join/${sessionId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,4 +39,7 @@ if (!sessionId) {
         joinStatus.textContent = "An error occurred. Please try again.";
       });
   });
+
+  //localhost:8080
+  //bigtactoe-backend-production.up.railway.app
 }

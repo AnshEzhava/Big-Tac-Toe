@@ -16,9 +16,8 @@ copyLinkButton.addEventListener("click", () => {
     });
 });
 
-//pls work my man
 function checkGameStatus() {
-  fetch(`http://localhost:8080/api/games/status/${sessionId}`)
+  fetch(`http://bigtactoe-backend-production.up.railway.app/api/games/status/${sessionId}`)
     .then((response) => response.text())
     .then((status) => {
       if (status === "PLAYING") {
@@ -32,5 +31,6 @@ function checkGameStatus() {
     })
     .catch((error) => console.error("Error checking game status:", error));
 }
-
+//localhost:8080
+//bigtactoe-backend-production.up.railway.app
 setInterval(checkGameStatus, 3000);
