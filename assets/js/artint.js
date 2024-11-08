@@ -16,7 +16,7 @@ function handleCellClick(event) {
     ultimateGrid[miniGridIndex][cellIndex] ||
     (activeMiniGrid !== -1 && activeMiniGrid !== miniGridIndex)
   ) {
-    return; // Invalid move
+    return;
   }
 
   makeMove(miniGridIndex, cellIndex, currentPlayer);
