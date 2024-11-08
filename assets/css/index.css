@@ -50,6 +50,16 @@ body {
   color: white;
   border-radius: 10px;
 }
+.AI-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  text-decoration: none;
+  background-color: rgb(60, 61, 55);
+  color: white;
+  border-radius: 10px;
+}
 
 .online-btn {
   display: flex;
