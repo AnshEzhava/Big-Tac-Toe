@@ -26,7 +26,7 @@ function handleCellClick(event) {
 
     currentPlayer = 'O';
     document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
-    setTimeout(() => makeAIMove(), 500); // AI moves after a short delay
+    setTimeout(() => makeAIMove(), 1500); // AI moves after a short delay
 }
 
 // Executes a move in the specified mini-grid and cell
