@@ -87,24 +87,24 @@ if (sessionId) {
     window.location.href = "index.html";
   }
 
-  window.websocket.onmessage = function (event) {
-    const data = JSON.parse(event.data);
-    if (data.event === "host-leaving") {
-      redirectToIndex();
-    }
-  };
+//   window.websocket.onmessage = function (event) {
+//     const data = JSON.parse(event.data);
+//     if (data.event === "host-leaving") {
+//       redirectToIndex();
+//     }
+//   };
 
-  window.onbeforeunload = function () {
-    // Notify the host (if needed)
-    if (window.websocket && window.websocket.readyState === WebSocket.OPEN) {
-      window.websocket.send(
-        JSON.stringify({
-          event: "guest-leaving",
-          message: "The guest has left the game.",
-        })
-      );
-    }
-  };
+//   window.onbeforeunload = function () {
+//     // Notify the host (if needed)
+//     if (window.websocket && window.websocket.readyState === WebSocket.OPEN) {
+//       window.websocket.send(
+//         JSON.stringify({
+//           event: "guest-leaving",
+//           message: "The guest has left the game.",
+//         })
+//       );
+//     }
+//   };
 
   function handleCellClick(event) {
     if (currentPlayer !== playerSymbol) {
