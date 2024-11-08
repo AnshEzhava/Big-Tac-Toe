@@ -18,13 +18,16 @@ if (!sessionId) {
   const joinStatus = document.getElementById("joinStatus");
 
   joinButton.addEventListener("click", () => {
-    fetch(`https://bigtactoe-backend-production.up.railway.app/api/games/join/${sessionId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: "",
-    })
+    fetch(
+      `https://bigtactoe-backend-production.up.railway.app/api/games/join/${sessionId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: "",
+      }
+    )
       .then((response) => {
         if (response.ok) {
           window.location.href = `guest.html?sessionId=${sessionId}`;
