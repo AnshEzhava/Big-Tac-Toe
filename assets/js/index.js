@@ -11,13 +11,16 @@ button.addEventListener("mouseout", function () {
 button.addEventListener("click", createGame);
 
 function createGame() {
-  fetch("https://bigtactoe-backend-production.up.railway.app/api/games/create", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ status: "OPEN" }),
-  })
+  fetch(
+    "https://bigtactoe-backend-production.up.railway.app/api/games/create",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: "OPEN" }),
+    }
+  )
     .then((response) => {
       if (response.ok) {
         return response.json();
@@ -35,6 +38,6 @@ function createGame() {
     })
     .catch((error) => console.error("Error creating game: ", error));
 
-    //bigtactoe-backend-production.up.railway.app
-    //localhost:8080
+  //bigtactoe-backend-production.up.railway.app
+  //localhost:8080
 }
