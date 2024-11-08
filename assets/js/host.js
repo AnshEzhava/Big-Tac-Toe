@@ -30,6 +30,7 @@ if (sessionId) {
         redirectGuest();
         return;
     }
+
     const {
       miniGridIndex,
       cellIndex,
@@ -49,6 +50,18 @@ if (sessionId) {
     }
 
     console.log("Received data:", data);
+
+    window.onbeforeunload = function () {
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(
+            JSON.stringify({
+              event: "host-leaving",
+              message: "The host has left the game. Redirecting to the main page.",
+            })
+          );
+        }
+        window.location.href = "index.html";
+    };
 
     const cell = document.querySelector(
       `.mini-grid[data-index='${miniGridIndex}'] div[data-cell='${cellIndex}']`
@@ -82,18 +95,6 @@ if (sessionId) {
     console.error("WebSocket error:", error);
   };
 
-  window.onbeforeunload = function () {
-    // Notify the guest that the host is leaving
-    if (socket.readyState === WebSocket.OPEN) {
-      socket.send(
-        JSON.stringify({
-          event: "host-leaving",
-          message: "The host has left the game. Redirecting to the main page.",
-        })
-      );
-    }
-    window.location.href = "index.html";
-  };
   function redirectGuest() {
     window.location.href = "index.html";
   }

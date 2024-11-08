@@ -31,6 +31,18 @@ if (sessionId) {
         return;
     }
 
+    window.onbeforeunload = function () {
+        // Notify the host (if needed)
+        if (window.websocket && window.websocket.readyState === WebSocket.OPEN) {
+          window.websocket.send(
+            JSON.stringify({
+              event: "guest-leaving",
+              message: "The guest has left the game.",
+            })
+          );
+        }
+    };
+
     const {
       miniGridIndex,
       cellIndex,
@@ -47,11 +59,6 @@ if (sessionId) {
         "winner-line"
       ).textContent = `Player ${winner} wins the game!`;
       return; // Stop further actions if the game is over
-    }
-
-    if (data.event === "host-leaving") {
-      redirectToIndex();
-      return;
     }
 
     console.log("Received data:", data);
@@ -91,18 +98,6 @@ if (sessionId) {
 
   function redirectToIndex() {
     window.location.href = "index.html";
-  };
-  
-  window.onbeforeunload = function () {
-    // Notify the host (if needed)
-    if (window.websocket && window.websocket.readyState === WebSocket.OPEN) {
-      window.websocket.send(
-        JSON.stringify({
-          event: "guest-leaving",
-          message: "The guest has left the game.",
-        })
-      );
-    }
   };
 
   function handleCellClick(event) {
