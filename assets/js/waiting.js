@@ -18,7 +18,7 @@ copyLinkButton.addEventListener("click", () => {
 
 function checkGameStatus() {
   fetch(
-    `https://bigtactoe-backend-production.up.railway.app/api/games/status/${sessionId}`
+    `https://bigtactoe-backend.azurewebsites.net/api/games/status/${sessionId}`
   )
     .then((response) => response.text())
     .then((status) => {

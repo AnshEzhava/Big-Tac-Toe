@@ -19,7 +19,7 @@ if (!sessionId) {
 
   joinButton.addEventListener("click", () => {
     fetch(
-      `https://bigtactoe-backend-production.up.railway.app/api/games/join/${sessionId}`,
+      `https://bigtactoe-backend.azurewebsites.net/api/games/join/${sessionId}`,
       {
         method: "POST",
         headers: {

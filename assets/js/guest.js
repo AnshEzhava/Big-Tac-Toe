@@ -11,7 +11,7 @@ const miniGridStatus = Array(9).fill(null);
 
 if (sessionId) {
   const socket = new WebSocket(
-    `wss://bigtactoe-backend-production.up.railway.app/ws/game?sessionId=${sessionId}`
+    `wss://bigtactoe-backend.azurewebsites.net/ws/game?sessionId=${sessionId}`
   );
 
   //bigtactoe-backend-production.up.railway.app

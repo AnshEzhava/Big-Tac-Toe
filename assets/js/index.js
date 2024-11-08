@@ -3,7 +3,7 @@ button.addEventListener("click", createGame);
 
 function createGame() {
   fetch(
-    "https://bigtactoe-backend-production.up.railway.app/api/games/create",
+    "https://bigtactoe-backend.azurewebsites.net/api/games/create",
     {
       method: "POST",
       headers: {
