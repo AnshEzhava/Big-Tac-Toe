@@ -2,58 +2,123 @@ let currentPlayer = 'X';
 const ultimateGrid = Array(9).fill(null).map(() => Array(9).fill(null));
 const miniGridStatus = Array(9).fill(null);
 let activeMiniGrid = -1;
-const AI_PLAYER = 'O';
-const HUMAN_PLAYER = 'X';
 
+// --- AI SETTINGS ---
+const SIMULATION_COUNT = 100;  // Number of simulations per possible move
+
+// Handles human player's move
 function handleCellClick(event) {
-    if (currentPlayer === AI_PLAYER) return; // Block input if it's the AI's turn
+    if (currentPlayer !== 'X') return; // Only allow clicks on human's turn
 
     const cell = event.target;
     const [miniGridIndex, cellIndex] = cell.dataset.index.split('-').map(Number);
 
     if (ultimateGrid[miniGridIndex][cellIndex] || (activeMiniGrid !== -1 && activeMiniGrid !== miniGridIndex)) {
-        return;
+        return; // Invalid move
     }
 
     makeMove(miniGridIndex, cellIndex, currentPlayer);
-    
-    if (!checkForGameEnd()) {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        if (currentPlayer === AI_PLAYER) {
-            const aiMove = findBestMove();
-            makeMove(aiMove.miniGridIndex, aiMove.cellIndex, AI_PLAYER);
-            checkForGameEnd();
-            currentPlayer = HUMAN_PLAYER;
-        }
+
+    if (checkWinner(miniGridStatus)) {
+        document.getElementById("winner-line").textContent = `Player ${currentPlayer} wins the game!`;
+        return;
     }
-    updateGridHighlight();
+
+    currentPlayer = 'O';
+    document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
+    setTimeout(() => makeAIMove(), 500); // AI moves after a short delay
 }
 
+// Executes a move in the specified mini-grid and cell
 function makeMove(miniGridIndex, cellIndex, player) {
     ultimateGrid[miniGridIndex][cellIndex] = player;
+    if (checkWinner(ultimateGrid[miniGridIndex])) {
+        miniGridStatus[miniGridIndex] = player;
+        document.querySelectorAll('.mini-grid')[miniGridIndex].classList.add(`won-${player}`);
+    }
+
     const cell = document.querySelector(`[data-index="${miniGridIndex}-${cellIndex}"]`);
     cell.textContent = player;
     cell.classList.add('filled');
     cell.classList.remove('empty');
 
-    if (checkWinner(ultimateGrid[miniGridIndex])) {
-        miniGridStatus[miniGridIndex] = player;
-        const miniGridElement = document.querySelectorAll('.mini-grid')[miniGridIndex];
-        miniGridElement.classList.add(`won-${player}`);
-        miniGridElement.setAttribute('data-winner', player);
-    }
-
     activeMiniGrid = miniGridStatus[cellIndex] ? -1 : cellIndex;
+    updateGridHighlight();
 }
 
-function checkForGameEnd() {
+// AI Move logic using Monte Carlo Tree Search
+function makeAIMove() {
+    const [miniGridIndex, cellIndex] = findBestMove();
+    makeMove(miniGridIndex, cellIndex, currentPlayer);
+
     if (checkWinner(miniGridStatus)) {
         document.getElementById("winner-line").textContent = `Player ${currentPlayer} wins the game!`;
-        return true;
+        return;
     }
-    return false;
+
+    currentPlayer = 'X';
+    document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
+    updateGridHighlight();
 }
 
+// Monte Carlo Tree Search for AI
+function findBestMove() {
+    const possibleMoves = getValidMoves();
+    const winCounts = Array(possibleMoves.length).fill(0);
+
+    possibleMoves.forEach((move, i) => {
+        for (let j = 0; j < SIMULATION_COUNT; j++) {
+            const result = simulateRandomGame(move[0], move[1], currentPlayer);
+            if (result === currentPlayer) winCounts[i]++;
+        }
+    });
+
+    const bestIndex = winCounts.indexOf(Math.max(...winCounts));
+    return possibleMoves[bestIndex];
+}
+
+// Simulates a random game from a given move
+function simulateRandomGame(miniGridIndex, cellIndex, startingPlayer) {
+    const simUltimateGrid = ultimateGrid.map(grid => grid.slice());
+    const simMiniGridStatus = miniGridStatus.slice();
+    let simActiveMiniGrid = activeMiniGrid;
+    let player = startingPlayer;
+
+    makeSimulatedMove(simUltimateGrid, simMiniGridStatus, miniGridIndex, cellIndex, player);
+
+    while (!checkWinner(simMiniGridStatus)) {
+        const moves = getValidMoves(simUltimateGrid, simMiniGridStatus, simActiveMiniGrid);
+        if (moves.length === 0) break;
+        const [simMiniGridIndex, simCellIndex] = moves[Math.floor(Math.random() * moves.length)];
+        player = player === 'X' ? 'O' : 'X';
+        makeSimulatedMove(simUltimateGrid, simMiniGridStatus, simMiniGridIndex, simCellIndex, player);
+    }
+    return player;
+}
+
+function makeSimulatedMove(simUltimateGrid, simMiniGridStatus, miniGridIndex, cellIndex, player) {
+    simUltimateGrid[miniGridIndex][cellIndex] = player;
+    if (checkWinner(simUltimateGrid[miniGridIndex])) {
+        simMiniGridStatus[miniGridIndex] = player;
+    }
+}
+
+// Valid moves based on the current game state
+function getValidMoves(grid = ultimateGrid, miniGridStatusOverride = miniGridStatus, activeMiniGridOverride = activeMiniGrid) {
+    const moves = [];
+    const gridsToCheck = activeMiniGridOverride === -1 ? Array.from({ length: 9 }, (_, i) => i) : [activeMiniGridOverride];
+
+    gridsToCheck.forEach(miniGridIndex => {
+        if (!miniGridStatusOverride[miniGridIndex]) {
+            for (let cellIndex = 0; cellIndex < 9; cellIndex++) {
+                if (!grid[miniGridIndex][cellIndex]) moves.push([miniGridIndex, cellIndex]);
+            }
+        }
+    });
+    return moves;
+}
+
+// Helper function to check winner in a grid
 function checkWinner(grid) {
     const winningCombinations = [
         [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -65,67 +130,7 @@ function checkWinner(grid) {
     );
 }
 
-function findBestMove() {
-    let bestScore = -Infinity;
-    let bestMove = null;
-
-    for (let miniGridIndex = 0; miniGridIndex < 9; miniGridIndex++) {
-        if (miniGridStatus[miniGridIndex]) continue;
-        for (let cellIndex = 0; cellIndex < 9; cellIndex++) {
-            if (!ultimateGrid[miniGridIndex][cellIndex]) {
-                ultimateGrid[miniGridIndex][cellIndex] = AI_PLAYER;
-                let score = minimax(ultimateGrid, 0, false, -Infinity, Infinity);
-                ultimateGrid[miniGridIndex][cellIndex] = null;
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = { miniGridIndex, cellIndex };
-                }
-            }
-        }
-    }
-    return bestMove;
-}
-
-function minimax(board, depth, isMaximizing, alpha, beta) {
-    if (checkWinner(miniGridStatus) === AI_PLAYER) return 10 - depth;
-    if (checkWinner(miniGridStatus) === HUMAN_PLAYER) return depth - 10;
-    if (miniGridStatus.every(status => status)) return 0; // Tie
-
-    if (isMaximizing) {
-        let maxEval = -Infinity;
-        for (let miniGridIndex = 0; miniGridIndex < 9; miniGridIndex++) {
-            if (miniGridStatus[miniGridIndex]) continue;
-            for (let cellIndex = 0; cellIndex < 9; cellIndex++) {
-                if (!board[miniGridIndex][cellIndex]) {
-                    board[miniGridIndex][cellIndex] = AI_PLAYER;
-                    let eval = minimax(board, depth + 1, false, alpha, beta);
-                    board[miniGridIndex][cellIndex] = null;
-                    maxEval = Math.max(maxEval, eval);
-                    alpha = Math.max(alpha, eval);
-                    if (beta <= alpha) return maxEval;
-                }
-            }
-        }
-        return maxEval;
-    } else {
-        let minEval = Infinity;
-        for (let miniGridIndex = 0; miniGridIndex < 9; miniGridIndex++) {
-            if (miniGridStatus[miniGridIndex]) continue;
-            for (let cellIndex = 0; cellIndex < 9; cellIndex++) {
-                if (!board[miniGridIndex][cellIndex]) {
-                    board[miniGridIndex][cellIndex] = HUMAN_PLAYER;
-                    let eval = minimax(board, depth + 1, true, alpha, beta);
-                    board[miniGridIndex][cellIndex] = null;
-                    minEval = Math.min(minEval, eval);
-                    beta = Math.min(beta, eval);
-                    if (beta <= alpha) return minEval;
-                }
-            }
-        }
-        return minEval;
-    }
-}
-
+// Update grid highlights based on the active mini-grid
 function updateGridHighlight() {
     document.querySelectorAll('.mini-grid').forEach((grid, index) => {
         grid.classList.remove('active');
@@ -135,3 +140,13 @@ function updateGridHighlight() {
     });
 }
 
+// Initialize cells with click events and empty classes
+document.querySelectorAll('.mini-grid div').forEach((cell, index) => {
+    const miniGridIndex = Math.floor(index / 9);
+    const cellIndex = index % 9;
+    cell.dataset.index = `${miniGridIndex}-${cellIndex}`;
+    cell.addEventListener('click', handleCellClick);
+    cell.classList.add('empty');
+});
+
+updateGridHighlight();
