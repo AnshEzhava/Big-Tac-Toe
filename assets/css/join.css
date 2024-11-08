@@ -5,35 +5,38 @@ body {
   background-color: #1a1a1a;
   color: #e0d7c6;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   text-align: center;
+  padding: 0 10px;
 }
-h2 {
+
+.main-heading {
   font-size: 5vw;
-  margin: 2vh 0;
+  margin-bottom: 3vh;
   color: #e0d7c6;
 }
 
 .button-status-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  gap: 2vh;
+  width: 100%;
 }
 
 #joinGameButton {
-  font-family: "Moderustic", sans-serif;
   background-color: #333;
+  font-family: "Moderustic", sans-serif;
   color: #e0d7c6;
   border: none;
-  padding: 2vh 5vw;
-  margin-top: 1vh;
-  margin-left: 5vh;
+  padding: 1.5vh 4vw;
   cursor: pointer;
   border-radius: 5px;
-  font-size: 1vw;
+  font-size: 1.5vw;
   transition: background-color 0.3s;
 }
 
@@ -42,8 +45,38 @@ h2 {
 }
 
 #joinStatus {
-  font-family: "Moderustic", sans-serif;
-  margin-top: 0;
   color: #e0d7c6;
-  font-size: 1vw;
+  font-family: "Moderustic", sans-serif;
+  font-size: 1.2vw;
+  margin-top: 1vh;
+}
+
+@media (max-width: 768px) {
+  .main-heading {
+    font-size: 6vw;
+  }
+
+  #joinGameButton {
+    font-size: 3vw;
+    padding: 2vh 6vw;
+  }
+
+  #joinStatus {
+    font-size: 2.5vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-heading {
+    font-size: 7vw;
+  }
+
+  #joinGameButton {
+    font-size: 4vw;
+    padding: 2vh 8vw;
+  }
+
+  #joinStatus {
+    font-size: 3vw;
+  }
 }
