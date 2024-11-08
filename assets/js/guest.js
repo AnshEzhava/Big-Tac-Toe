@@ -25,6 +25,12 @@ if (sessionId) {
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
+
+    if (data.event === "host-leaving") {
+        redirectToIndex();
+        return;
+    }
+
     const {
       miniGridIndex,
       cellIndex,
@@ -85,15 +91,8 @@ if (sessionId) {
 
   function redirectToIndex() {
     window.location.href = "index.html";
-  }
-
-  window.socket.onmessage = function (event) {
-    const data = JSON.parse(event.data);
-    if (data.event === "host-leaving") {
-      redirectToIndex();
-    }
   };
-
+  
   window.onbeforeunload = function () {
     // Notify the host (if needed)
     if (window.websocket && window.websocket.readyState === WebSocket.OPEN) {

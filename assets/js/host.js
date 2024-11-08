@@ -24,6 +24,10 @@ if (sessionId) {
   };
 
   socket.onmessage = (event) => {
+    if (data.event === "host-leaving") {
+        console.log("Host has left, redirecting the guest.");
+        redirectGuest();
+    }
     const data = JSON.parse(event.data);
     const {
       miniGridIndex,
@@ -92,15 +96,7 @@ if (sessionId) {
   function redirectGuest() {
     window.location.href = "index.html";
   }
-
-  socket.onmessage = function (event) {
-    const data = JSON.parse(event.data);
-    if (data.event === "host-leaving") {
-      console.log("Host has left, redirecting the guest.");
-      redirectGuest();
-    }
-  };
-
+  
   function handleCellClick(event) {
     if (currentPlayer !== playerSymbol) {
       console.log("Not your turn!");
