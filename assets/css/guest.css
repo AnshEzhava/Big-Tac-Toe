@@ -1,99 +1,136 @@
-@import url('https://fonts.googleapis.com/css2?family=Moderustic:wght@300..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Moderustic:wght@300..800&display=swap");
 
 body {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #1E201E;
-    font-family: "Moderustic";
-    padding-left: 100px;
-    padding-right: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #1e201e;
+  justify-content: space-between;
+  font-family: "Moderustic";
+  padding: 20px;
+}
+
+h1 {
+  padding-top: 2vh;
+  font-size: 32px;
+  color: wheat;
+  margin-bottom: 20px;
+  padding-bottom: 1vh;
 }
 
 .ultimate-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 5px;
-    width: 600px;
-    height: 600px;
-    background-color: #1E201E;
-    font-size: large;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 5px;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  background-color: #1e201e;
+  font-size: large;
 }
 
 .mini-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    border: 3px solid #000;
-    background-color: #e0e0e0;
-    opacity: 0.5;
-    position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  border: 3px solid #000;
+  background-color: #e0e0e0;
+  opacity: 0.5;
+  position: relative;
 }
 
 .mini-grid div {
-    border: 1px solid #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #fff;
-    transition: opacity 0.3s;
+  border: 1px solid #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #fff;
+  transition: opacity 0.3s;
 }
 
-.mini-grid div.filled{
-    opacity: 0.5;
-    cursor: not-allowed;
+.mini-grid div.filled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.mini-grid div.empty:hover{
-    background-color: #919090;
+.mini-grid div.empty:hover {
+  background-color: #919090;
 }
 
 .mini-grid div:hover {
-    background-color: #999999;
+  background-color: #999999;
 }
 
 .mini-grid.active {
-    opacity: 1;
+  opacity: 1;
 }
 
-.mini-grid.won-X, .mini-grid.won-O {
-    background-color: #d3d3d3;
-    position: relative;
+.mini-grid.won-X,
+.mini-grid.won-O {
+  background-color: #d3d3d3;
+  position: relative;
 }
 
-.mini-grid.won-X::after, .mini-grid.won-O::after {
-    content: attr(data-winner);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 150px;
-    color: rgba(0, 0, 0, 2000);
-    z-index: 1;
+.mini-grid.won-X::after,
+.mini-grid.won-O::after {
+  content: attr(data-winner);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 150px;
+  color: rgba(0, 0, 0, 2000);
+  z-index: 1;
 }
 
-.mini-grid.won-X div, .mini-grid.won-O div {
-    pointer-events: none;
+.mini-grid.won-X div,
+.mini-grid.won-O div {
+  pointer-events: none;
 }
 
-.side-box{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 10px;
-    width: 500px;
-    height: 75%;
-    /* border: 2px solid black; */
-    color: wheat;
+#guest-line {
+  text-align: center;
+  position: relative;
+  top: -10px;
 }
 
-#winner-line{
-    font-size: 50px;
+#winner-line {
+  color: wheat;
+  font-size: 24px;
+  text-align: center;
+  position: relative;
+  top: -10px;
+}
+.comments {
+  margin-top: auto;
+  font-size: 14px;
+  text-align: center;
+  color: wheat;
+  padding-bottom: 20px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  .ultimate-grid {
+    max-width: 400px;
+  }
+
+  .mini-grid div {
+    font-size: 16px;
+  }
+
+  .comments {
+    font-size: 12px;
+  }
 }
