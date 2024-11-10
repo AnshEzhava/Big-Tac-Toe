@@ -27,7 +27,7 @@ if (sessionId) {
 
     if (data.event === "reload") {
       console.log("Opponent has reloaded the page. Redirecting...");
-      alert("Your opponent has reloaded the page. Redirecting to the main page.");
+      // alert("Your opponent has reloaded the page. Redirecting to the main page.");
       redirectToIndex();
       return;
     }
@@ -79,7 +79,7 @@ if (sessionId) {
   socket.onclose = () => {
     if (!isReloading) {
       console.log("Disconnected from WebSocket unexpectedly.");
-      alert("Connection lost. You will be redirected to the main page.");
+      // alert("Connection lost. You will be redirected to the main page.");
       redirectToIndex();
     } else {
       console.log("Player is reloading the page.");

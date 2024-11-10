@@ -30,7 +30,7 @@ function handleCellClick(event) {
 
   currentPlayer = "O";
   document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
-  setTimeout(() => makeAIMove(), 500);
+  setTimeout(() => makeAIMove(), 1500);
 }
 
 function makeMove(miniGridIndex, cellIndex, player) {
