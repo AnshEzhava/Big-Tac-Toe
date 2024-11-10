@@ -2,87 +2,102 @@
 const urlParams = new URLSearchParams(window.location.search);
 const sessionId = urlParams.get("sessionId");
 
-const playerSymbol = "X"; // Host is always X
-let currentPlayer = "X"; // Track the turn
-let activeMiniGrid = -1; // The allowed mini-grid for the next move
-const ultimateGrid = Array(9)
-  .fill(null)
-  .map(() => Array(9).fill(null));
-const miniGridStatus = Array(9).fill(null); // Track who won each mini-grid
+const playerSymbol = "X"; // Change to "O" for guest.js
+let currentPlayer = "X";
+let activeMiniGrid = -1;
+const ultimateGrid = Array(9).fill(null).map(() => Array(9).fill(null));
+const miniGridStatus = Array(9).fill(null);
+let isLeaving = false;
 
 if (sessionId) {
   const socket = new WebSocket(
     `wss://bigtactoe-backend.azurewebsites.net/ws/game?sessionId=${sessionId}`
   );
-  //bigtactoe-backend-production.up.railway.app
-  //localhost:8080
+
+  // WebSocket onopen handler
   socket.onopen = () => {
-    console.log(
-      "Connected to WebSocket for game updates, session ID:",
-      sessionId
-    );
+    console.log("Connected to WebSocket, session ID:", sessionId);
   };
 
+  // WebSocket onmessage handler
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
 
     if (data.event === "opponent-left") {
-        alert("Your opponent has disconnected. You win!");
-        window.location.href = "index.html";
-        return;
+      alert("Your opponent has disconnected. You win!");
+      window.location.href = "index.html";
+      return;
     }
 
     const {
-        miniGridIndex,
-        cellIndex,
-        player,
-        nextTurn,
-        nextActiveMiniGrid,
-        type,
-        winner,
-        miniGridWinner,
+      miniGridIndex,
+      cellIndex,
+      player,
+      nextTurn,
+      nextActiveMiniGrid,
+      type,
+      winner,
+      miniGridWinner,
     } = data;
 
     if (type === "GAME_OVER") {
-        document.getElementById("winner-line").textContent = `Player ${winner} wins the game!`;
-        return;
+      showWinnerPopup(winner);
+      return;
     }
 
     console.log("Received data:", data);
 
     const cell = document.querySelector(
-        `.mini-grid[data-index='${miniGridIndex}'] div[data-cell='${cellIndex}']`
+      `.mini-grid[data-index='${miniGridIndex}'] div[data-cell='${cellIndex}']`
     );
     if (cell) {
-        cell.textContent = player;
-        cell.classList.add("filled");
-        cell.classList.remove("empty");
-        currentPlayer = nextTurn;
-        activeMiniGrid = nextActiveMiniGrid;
-        document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
-        updateGridHighlight();
+      cell.textContent = player;
+      cell.classList.add("filled");
+      cell.classList.remove("empty");
+      currentPlayer = nextTurn;
+      activeMiniGrid = nextActiveMiniGrid;
+      document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
+      updateGridHighlight();
     }
 
     if (miniGridWinner) {
-        miniGridStatus[miniGridIndex] = miniGridWinner;
-        const miniGridElement = document.querySelectorAll(".mini-grid")[miniGridIndex];
-        miniGridElement.classList.add(`won-${miniGridWinner}`);
-        miniGridElement.setAttribute("data-winner", miniGridWinner);
+      miniGridStatus[miniGridIndex] = miniGridWinner;
+      const miniGridElement = document.querySelectorAll(".mini-grid")[miniGridIndex];
+      miniGridElement.classList.add(`won-${miniGridWinner}`);
+      miniGridElement.setAttribute("data-winner", miniGridWinner);
     }
-};
-
-  socket.onclose = () => {
-    console.log("Disconnected from WebSocket");
   };
 
+  // WebSocket onclose handler
+  socket.onclose = () => {
+    if (!isLeaving) {
+      console.log("Disconnected from WebSocket unexpectedly.");
+      alert("Connection lost. Please try joining the game again.");
+      window.location.href = "index.html";
+    } else {
+      console.log("Disconnected intentionally.");
+    }
+  };
+
+  // WebSocket onerror handler
   socket.onerror = (error) => {
     console.error("WebSocket error:", error);
   };
 
-  function redirectGuest() {
-    window.location.href = "index.html";
-  }
+  // Handle page unload
+  window.onbeforeunload = () => {
+    if (socket.readyState === WebSocket.OPEN) {
+      isLeaving = true;
+      socket.send(
+        JSON.stringify({
+          event: "player-leaving",
+          message: "The player has left the game.",
+        })
+      );
+    }
+  };
 
+  // Handle cell click
   function handleCellClick(event) {
     if (currentPlayer !== playerSymbol) {
       console.log("Not your turn!");
@@ -90,9 +105,7 @@ if (sessionId) {
     }
 
     const cell = event.target;
-    const [miniGridIndex, cellIndex] = cell.dataset.index
-      .split("-")
-      .map(Number);
+    const [miniGridIndex, cellIndex] = cell.dataset.index.split("-").map(Number);
 
     if (
       ultimateGrid[miniGridIndex][cellIndex] ||
@@ -110,16 +123,13 @@ if (sessionId) {
 
     if (checkMiniGridWinner(ultimateGrid[miniGridIndex])) {
       miniGridStatus[miniGridIndex] = playerSymbol;
-      const miniGridElement =
-        document.querySelectorAll(".mini-grid")[miniGridIndex];
-      miniGridElement.classList.add(`won-${currentPlayer}`);
+      const miniGridElement = document.querySelectorAll(".mini-grid")[miniGridIndex];
+      miniGridElement.classList.add(`won-${playerSymbol}`);
       miniGridElement.setAttribute("data-winner", playerSymbol);
       miniGridWinner = playerSymbol;
 
       if (checkUltimateGridWinner()) {
-        document.getElementById(
-          "winner-line"
-        ).textContent = `Player ${playerSymbol} wins the game!`;
+        showWinnerPopup(playerSymbol);
 
         const moveData = {
           miniGridIndex,
@@ -127,8 +137,8 @@ if (sessionId) {
           player: playerSymbol,
           nextTurn: null,
           nextActiveMiniGrid: null,
-          sessionId: sessionId,
-          miniGridWinner: miniGridWinner,
+          sessionId,
+          miniGridWinner,
           type: "GAME_OVER",
           winner: playerSymbol,
         };
@@ -147,19 +157,17 @@ if (sessionId) {
       player: playerSymbol,
       nextTurn,
       nextActiveMiniGrid: activeMiniGrid,
-      sessionId: sessionId,
-      miniGridWinner: miniGridWinner,
+      sessionId,
+      miniGridWinner,
     };
-    console.log("Sending move data:", moveData);
     socket.send(JSON.stringify(moveData));
 
     currentPlayer = nextTurn;
-    document.getElementById(
-      "info"
-    ).textContent = `Current turn: ${currentPlayer}`;
+    document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
     updateGridHighlight();
   }
 
+  // Update grid highlight
   function updateGridHighlight() {
     document.querySelectorAll(".mini-grid").forEach((grid, index) => {
       grid.classList.remove("active");
@@ -169,6 +177,7 @@ if (sessionId) {
     });
   }
 
+  // Check for mini-grid winner
   function checkMiniGridWinner(grid) {
     const winningCombinations = [
       [0, 1, 2],
@@ -181,12 +190,11 @@ if (sessionId) {
       [2, 4, 6],
     ];
     return winningCombinations.some((combination) =>
-      combination.every(
-        (index) => grid[index] && grid[index] === grid[combination[0]]
-      )
+      combination.every((index) => grid[index] && grid[index] === grid[combination[0]])
     );
   }
 
+  // Check for ultimate grid winner
   function checkUltimateGridWinner() {
     const winningCombinations = [
       [0, 1, 2],
@@ -199,14 +207,13 @@ if (sessionId) {
       [2, 4, 6],
     ];
     return winningCombinations.some((combination) =>
-      combination.every(
-        (index) =>
-          miniGridStatus[index] &&
-          miniGridStatus[index] === miniGridStatus[combination[0]]
+      combination.every((index) =>
+        miniGridStatus[index] && miniGridStatus[index] === miniGridStatus[combination[0]]
       )
     );
   }
 
+  // Initialize cells
   document.querySelectorAll(".mini-grid div").forEach((cell, index) => {
     const miniGridIndex = Math.floor(index / 9);
     const cellIndex = index % 9;
@@ -218,4 +225,20 @@ if (sessionId) {
   updateGridHighlight();
 } else {
   console.error("sessionId parameter is missing in the URL");
+}
+
+// Show winner popup
+function showWinnerPopup(winner) {
+  const popup = document.createElement("div");
+  popup.classList.add("popup");
+  popup.innerHTML = `
+    <h2>Congratulations!</h2>
+    <p>Player ${winner} wins the game!</p>
+    <button id="closePopup">Close</button>
+  `;
+  document.body.appendChild(popup);
+
+  document.getElementById("closePopup").addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
 }
