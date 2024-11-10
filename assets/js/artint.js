@@ -4,6 +4,7 @@ const ultimateGrid = Array(9)
   .map(() => Array(9).fill(null));
 const miniGridStatus = Array(9).fill(null);
 let activeMiniGrid = -1;
+let gameOver = false;
 const SIMULATION_COUNT = 100;
 
 function handleCellClick(event) {
@@ -23,6 +24,7 @@ function handleCellClick(event) {
 
   if (checkWinner(miniGridStatus)) {
     document.getElementById("winner-line").textContent = `Player ${currentPlayer} wins the game!`;
+    gameOver = true;
     return;
   }
 

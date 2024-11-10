@@ -5,6 +5,7 @@ const sessionId = urlParams.get("sessionId");
 const playerSymbol = "X"; // Change to "X" for host.js
 let currentPlayer = "X";
 let activeMiniGrid = -1;
+let gameOver = false;
 const ultimateGrid = Array(9)
   .fill(null)
   .map(() => Array(9).fill(null));
@@ -107,6 +108,10 @@ if (sessionId) {
   }
 
   function handleCellClick(event) {
+    if(gameOver){
+      return;
+    }
+
     if (currentPlayer !== playerSymbol) {
       console.log("Not your turn!");
       return;
@@ -139,7 +144,6 @@ if (sessionId) {
 
       if (checkUltimateGridWinner()) {
         document.getElementById("winner-line").textContent = `Player ${playerSymbol} wins the game!`;
-
         const moveData = {
           miniGridIndex,
           cellIndex,
@@ -152,6 +156,7 @@ if (sessionId) {
           winner: playerSymbol,
         };
         socket.send(JSON.stringify(moveData));
+        gameOver = true;
         return;
       }
     }
