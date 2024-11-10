@@ -2,30 +2,37 @@
 const urlParams = new URLSearchParams(window.location.search);
 const sessionId = urlParams.get("sessionId");
 
-const playerSymbol = "O"; // Change to "O" for guest.js
+const playerSymbol = "O"; // Change to "X" for host.js
 let currentPlayer = "X";
 let activeMiniGrid = -1;
-const ultimateGrid = Array(9).fill(null).map(() => Array(9).fill(null));
+const ultimateGrid = Array(9)
+  .fill(null)
+  .map(() => Array(9).fill(null));
 const miniGridStatus = Array(9).fill(null);
-let isLeaving = false;
+let isReloading = false;
 
 if (sessionId) {
   const socket = new WebSocket(
     `wss://bigtactoe-backend.azurewebsites.net/ws/game?sessionId=${sessionId}`
   );
 
-  // WebSocket onopen handler
+  // WebSocket connection handlers
   socket.onopen = () => {
-    console.log("Connected to WebSocket, session ID:", sessionId);
+    console.log("Connected to WebSocket for game updates, session ID:", sessionId);
   };
 
-  // WebSocket onmessage handler
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
 
-    if (data.event === "opponent-left") {
-      alert("Your opponent has disconnected. You win!");
-      window.location.href = "index.html";
+    if (data.event === "reload") {
+      console.log("Opponent has reloaded the page. Redirecting...");
+      alert("Your opponent has reloaded the page. Redirecting to the main page.");
+      redirectToIndex();
+      return;
+    }
+
+    if (data.event === "host-leaving" || data.event === "guest-leaving") {
+      redirectToIndex();
       return;
     }
 
@@ -41,7 +48,7 @@ if (sessionId) {
     } = data;
 
     if (type === "GAME_OVER") {
-      showWinnerPopup(winner);
+      document.getElementById("winner-line").textContent = `Player ${winner} wins the game!`;
       return;
     }
 
@@ -68,18 +75,16 @@ if (sessionId) {
     }
   };
 
-  // WebSocket onclose handler
   socket.onclose = () => {
-    if (!isLeaving) {
+    if (!isReloading) {
       console.log("Disconnected from WebSocket unexpectedly.");
-      alert("Connection lost. Please try joining the game again.");
-      window.location.href = "index.html";
+      alert("Connection lost. You will be redirected to the main page.");
+      redirectToIndex();
     } else {
-      console.log("Disconnected intentionally.");
+      console.log("Player is reloading the page.");
     }
   };
 
-  // WebSocket onerror handler
   socket.onerror = (error) => {
     console.error("WebSocket error:", error);
   };
@@ -87,17 +92,20 @@ if (sessionId) {
   // Handle page unload
   window.onbeforeunload = () => {
     if (socket.readyState === WebSocket.OPEN) {
-      isLeaving = true;
+      isReloading = true;
       socket.send(
         JSON.stringify({
-          event: "player-leaving",
-          message: "The player has left the game.",
+          event: "reload",
+          message: "The player has reloaded the page.",
         })
       );
     }
   };
 
-  // Handle cell click
+  function redirectToIndex() {
+    window.location.href = "index.html";
+  }
+
   function handleCellClick(event) {
     if (currentPlayer !== playerSymbol) {
       console.log("Not your turn!");
@@ -114,6 +122,7 @@ if (sessionId) {
       return;
     }
 
+    // Update local game state
     ultimateGrid[miniGridIndex][cellIndex] = playerSymbol;
     cell.textContent = playerSymbol;
     cell.classList.add("filled");
@@ -124,12 +133,12 @@ if (sessionId) {
     if (checkMiniGridWinner(ultimateGrid[miniGridIndex])) {
       miniGridStatus[miniGridIndex] = playerSymbol;
       const miniGridElement = document.querySelectorAll(".mini-grid")[miniGridIndex];
-      miniGridElement.classList.add(`won-${playerSymbol}`);
+      miniGridElement.classList.add(`won-${currentPlayer}`);
       miniGridElement.setAttribute("data-winner", playerSymbol);
       miniGridWinner = playerSymbol;
 
       if (checkUltimateGridWinner()) {
-        showWinnerPopup(playerSymbol);
+        document.getElementById("winner-line").textContent = `Player ${playerSymbol} wins the game!`;
 
         const moveData = {
           miniGridIndex,
@@ -137,8 +146,8 @@ if (sessionId) {
           player: playerSymbol,
           nextTurn: null,
           nextActiveMiniGrid: null,
-          sessionId,
-          miniGridWinner,
+          sessionId: sessionId,
+          miniGridWinner: miniGridWinner,
           type: "GAME_OVER",
           winner: playerSymbol,
         };
@@ -157,9 +166,10 @@ if (sessionId) {
       player: playerSymbol,
       nextTurn,
       nextActiveMiniGrid: activeMiniGrid,
-      sessionId,
-      miniGridWinner,
+      sessionId: sessionId,
+      miniGridWinner: miniGridWinner,
     };
+    console.log("Sending move data:", moveData);
     socket.send(JSON.stringify(moveData));
 
     currentPlayer = nextTurn;
@@ -167,7 +177,6 @@ if (sessionId) {
     updateGridHighlight();
   }
 
-  // Update grid highlight
   function updateGridHighlight() {
     document.querySelectorAll(".mini-grid").forEach((grid, index) => {
       grid.classList.remove("active");
@@ -177,7 +186,6 @@ if (sessionId) {
     });
   }
 
-  // Check for mini-grid winner
   function checkMiniGridWinner(grid) {
     const winningCombinations = [
       [0, 1, 2],
@@ -194,7 +202,6 @@ if (sessionId) {
     );
   }
 
-  // Check for ultimate grid winner
   function checkUltimateGridWinner() {
     const winningCombinations = [
       [0, 1, 2],
@@ -213,7 +220,6 @@ if (sessionId) {
     );
   }
 
-  // Initialize cells
   document.querySelectorAll(".mini-grid div").forEach((cell, index) => {
     const miniGridIndex = Math.floor(index / 9);
     const cellIndex = index % 9;
@@ -225,20 +231,4 @@ if (sessionId) {
   updateGridHighlight();
 } else {
   console.error("sessionId parameter is missing in the URL");
-}
-
-// Show winner popup
-function showWinnerPopup(winner) {
-  const popup = document.createElement("div");
-  popup.classList.add("popup");
-  popup.innerHTML = `
-    <h2>Congratulations!</h2>
-    <p>Player ${winner} wins the game!</p>
-    <button id="closePopup">Close</button>
-  `;
-  document.body.appendChild(popup);
-
-  document.getElementById("closePopup").addEventListener("click", () => {
-    window.location.href = "index.html";
-  });
 }
