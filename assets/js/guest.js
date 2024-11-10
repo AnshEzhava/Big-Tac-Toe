@@ -5,7 +5,7 @@ const sessionId = urlParams.get("sessionId");
 const playerSymbol = "O"; // Change to "X" for host.js
 let currentPlayer = "X";
 let activeMiniGrid = -1;
-let gameOver = true;
+let gameOver = false;
 const ultimateGrid = Array(9)
   .fill(null)
   .map(() => Array(9).fill(null));
