@@ -25,67 +25,51 @@ if (sessionId) {
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    if (data.event === "host-leaving") {
-        console.log("Host has left, redirecting the guest.");
-        redirectGuest();
+
+    if (data.event === "opponent-left") {
+        alert("Your opponent has disconnected. You win!");
+        window.location.href = "index.html";
         return;
     }
 
     const {
-      miniGridIndex,
-      cellIndex,
-      player,
-      nextTurn,
-      nextActiveMiniGrid,
-      type,
-      winner,
-      miniGridWinner,
+        miniGridIndex,
+        cellIndex,
+        player,
+        nextTurn,
+        nextActiveMiniGrid,
+        type,
+        winner,
+        miniGridWinner,
     } = data;
 
     if (type === "GAME_OVER") {
-      document.getElementById(
-        "winner-line"
-      ).textContent = `Player ${winner} wins the game!`;
-      return;
+        document.getElementById("winner-line").textContent = `Player ${winner} wins the game!`;
+        return;
     }
 
     console.log("Received data:", data);
 
-    window.onbeforeunload = function () {
-        if (socket.readyState === WebSocket.OPEN) {
-          socket.send(
-            JSON.stringify({
-              event: "host-leaving",
-              message: "The host has left the game. Redirecting to the main page.",
-            })
-          );
-        }
-        window.location.href = "index.html";
-    };
-
     const cell = document.querySelector(
-      `.mini-grid[data-index='${miniGridIndex}'] div[data-cell='${cellIndex}']`
+        `.mini-grid[data-index='${miniGridIndex}'] div[data-cell='${cellIndex}']`
     );
     if (cell) {
-      cell.textContent = player;
-      cell.classList.add("filled");
-      cell.classList.remove("empty");
-      currentPlayer = nextTurn;
-      activeMiniGrid = nextActiveMiniGrid;
-      document.getElementById(
-        "info"
-      ).textContent = `Current turn: ${currentPlayer}`;
-      updateGridHighlight();
+        cell.textContent = player;
+        cell.classList.add("filled");
+        cell.classList.remove("empty");
+        currentPlayer = nextTurn;
+        activeMiniGrid = nextActiveMiniGrid;
+        document.getElementById("info").textContent = `Current turn: ${currentPlayer}`;
+        updateGridHighlight();
     }
 
     if (miniGridWinner) {
-      miniGridStatus[miniGridIndex] = miniGridWinner;
-      const miniGridElement =
-        document.querySelectorAll(".mini-grid")[miniGridIndex];
-      miniGridElement.classList.add(`won-${miniGridWinner}`);
-      miniGridElement.setAttribute("data-winner", miniGridWinner);
+        miniGridStatus[miniGridIndex] = miniGridWinner;
+        const miniGridElement = document.querySelectorAll(".mini-grid")[miniGridIndex];
+        miniGridElement.classList.add(`won-${miniGridWinner}`);
+        miniGridElement.setAttribute("data-winner", miniGridWinner);
     }
-  };
+};
 
   socket.onclose = () => {
     console.log("Disconnected from WebSocket");
