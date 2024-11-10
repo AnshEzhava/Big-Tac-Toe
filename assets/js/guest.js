@@ -1,19 +1,19 @@
+// Retrieve sessionId from the URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const sessionId = urlParams.get("sessionId");
 
-const playerSymbol = "O";
-let currentPlayer = "X";
-let activeMiniGrid = -1;
+const playerSymbol = "O"; // Guest is always X
+let currentPlayer = "X"; // Track the turn
+let activeMiniGrid = -1; // The allowed mini-grid for the next move
 const ultimateGrid = Array(9)
   .fill(null)
   .map(() => Array(9).fill(null));
-const miniGridStatus = Array(9).fill(null);
+const miniGridStatus = Array(9).fill(null); // Track who won each mini-grid
 
 if (sessionId) {
   const socket = new WebSocket(
     `wss://bigtactoe-backend.azurewebsites.net/ws/game?sessionId=${sessionId}`
   );
-
   //bigtactoe-backend-production.up.railway.app
   //localhost:8080
   socket.onopen = () => {
@@ -25,23 +25,11 @@ if (sessionId) {
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-
     if (data.event === "host-leaving") {
-        redirectToIndex();
+        console.log("Host has left, redirecting the guest.");
+        redirectGuest();
         return;
     }
-
-    window.onbeforeunload = function () {
-        // Notify the host (if needed)
-        if (window.websocket && window.websocket.readyState === WebSocket.OPEN) {
-          window.websocket.send(
-            JSON.stringify({
-              event: "guest-leaving",
-              message: "The guest has left the game.",
-            })
-          );
-        }
-    };
 
     const {
       miniGridIndex,
@@ -58,10 +46,22 @@ if (sessionId) {
       document.getElementById(
         "winner-line"
       ).textContent = `Player ${winner} wins the game!`;
-      return; // Stop further actions if the game is over
+      return;
     }
 
     console.log("Received data:", data);
+
+    window.onbeforeunload = function () {
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(
+            JSON.stringify({
+              event: "host-leaving",
+              message: "The host has left the game. Redirecting to the main page.",
+            })
+          );
+        }
+        window.location.href = "index.html";
+    };
 
     const cell = document.querySelector(
       `.mini-grid[data-index='${miniGridIndex}'] div[data-cell='${cellIndex}']`
@@ -89,16 +89,16 @@ if (sessionId) {
 
   socket.onclose = () => {
     console.log("Disconnected from WebSocket");
-    redirectToIndex();
+    redirectGuest();
   };
 
   socket.onerror = (error) => {
     console.error("WebSocket error:", error);
   };
 
-  function redirectToIndex() {
+  function redirectGuest() {
     window.location.href = "index.html";
-  };
+  }
 
   function handleCellClick(event) {
     if (currentPlayer !== playerSymbol) {
@@ -118,7 +118,6 @@ if (sessionId) {
       return;
     }
 
-    // Update local game state
     ultimateGrid[miniGridIndex][cellIndex] = playerSymbol;
     cell.textContent = playerSymbol;
     cell.classList.add("filled");
