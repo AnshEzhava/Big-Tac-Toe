@@ -55,6 +55,15 @@ body {
   background-color: rgb(46, 47, 43);
 }
 
+.online-btn{
+  background-color: rgb(26, 26, 25);
+}
+
+.online-btn:hover{
+  cursor: not-allowed;
+  background-color: rgb(26, 26, 25);
+}
+
 .footer {
   display: flex;
   align-items: end;
